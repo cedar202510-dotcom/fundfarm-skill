@@ -1,4 +1,5 @@
 ---
+name: fundfarm-mcp
 description: Connect to FundFarm (养基场) - A-share mutual fund data, portfolio tracking, and AI analysis via MCP
 ---
 
