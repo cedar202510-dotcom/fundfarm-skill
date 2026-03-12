@@ -84,7 +84,7 @@ Authorization: Bearer <user's API Key>
 
 ---
 
-## Available Tools (22)
+## Available Tools (25)
 
 Tools are auto-discovered via MCP protocol after connecting.
 
@@ -114,6 +114,7 @@ Tools are auto-discovered via MCP protocol after connecting.
 | `get_portfolio_summary` | Portfolio overview (total invested/returns) |
 | `get_my_sectors` | Holdings sector distribution |
 | `get_my_nests` | Portfolio groups (nests) |
+| `get_transactions` | Transaction history (filterable by fund code / nest) |
 
 ### 🤖 AI Analysis
 | Tool | Description |
@@ -126,8 +127,10 @@ Tools are auto-discovered via MCP protocol after connecting.
 |------|--------|
 | `add_to_watchlist` | |
 | `remove_from_watchlist` | |
-| `add_holding` | Max 50 per request |
+| `add_holding` | Single purchase |
+| `batch_add_holdings` | Up to 50 items, counts as 1 write operation |
 | `sell_holding` | Max 50% of position per request |
+| `delete_transaction` | Agent-created records only; automatically reverses position changes |
 
 Write operation limits: ≤10/day, ≤3/minute.
 
@@ -138,8 +141,8 @@ Write operation limits: ≤10/day, ≤3/minute.
 | Scope | Description |
 |-------|-------------|
 | `fund:read` | Fund info and market data (10 tools) |
-| `portfolio:read` | Holdings and watchlist (5 tools) |
-| `portfolio:write` | Manage holdings and watchlist (4 tools) |
+| `portfolio:read` | Holdings, watchlist, and transaction history (6 tools) |
+| `portfolio:write` | Manage holdings/watchlist, delete transactions (6 tools) |
 | `ai:read` | AI analysis reports (1 tool) |
 | `ai:execute` | Run AI analysis (1 tool) |
 
