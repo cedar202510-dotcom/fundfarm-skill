@@ -132,7 +132,7 @@ Tools are auto-discovered via MCP protocol after connecting.
 | `sell_holding` | Max 50% of position per request |
 | `delete_transaction` | Agent-created records only; automatically reverses position changes |
 
-Write operation limits: ≤10/day, ≤3/minute.
+Write operation limits: ≤30/day, ≤10/minute.
 
 ---
 
