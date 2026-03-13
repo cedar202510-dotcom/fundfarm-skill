@@ -84,20 +84,20 @@ Authorization: Bearer <user's API Key>
 
 ---
 
-## Available Tools (25)
+## Available Tools (24)
 
 Tools are auto-discovered via MCP protocol after connecting.
 
 ### 📊 Fund Query
 | Tool | Description | Key Parameters |
 |------|-------------|---------------|
-| `search_funds` | Search funds by name/code | `keyword`, `fund_type`, `page`, `page_size` |
+| `search_funds` | Search funds by name/code | `keyword`, `limit` |
 | `get_fund_detail` | Fund details | `fund_code` |
 | `get_fund_nav_history` | Historical NAV | `fund_code`, `days` |
 | `get_fund_top_holdings` | Top 10 holdings | `fund_code` |
 | `get_fund_sector_allocation` | Sector allocation | `fund_code` |
 | `get_fund_estimate` | Intraday estimate | `fund_code` |
-| `get_fund_ranking` | Fund rankings | `sort_by`, `limit` |
+| `get_fund_ranking` | Fund rankings | `sort_by`, `order`, `limit` |
 
 ### 📈 Market Data
 | Tool | Description |
