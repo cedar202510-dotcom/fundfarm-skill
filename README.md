@@ -1,6 +1,6 @@
 # 🐔 FundFarm Skill (养基场)
 
-> Give your AI agent the power to query Chinese A-share mutual funds, manage portfolios, and run AI-powered investment analysis — all through MCP.
+> Connect your AI agent to **China's mutual fund market** — real-time data on 15,000+ domestic funds (A-share), portfolio tracking, and AI-powered investment analysis via MCP.
 
 ## Install
 

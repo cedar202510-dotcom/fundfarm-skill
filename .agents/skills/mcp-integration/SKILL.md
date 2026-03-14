@@ -1,167 +1,179 @@
 ---
-name: fundfarm-mcp
-description: Connect to FundFarm (养基场) - A-share mutual fund data, portfolio tracking, and AI analysis via MCP
+description: 如何将养基场 MCP Server 接入 AI 智能体（OpenClaw、Claude Desktop、Cursor 等）
 ---
 
-# FundFarm MCP Integration Skill
+# 养基场 MCP Server 接入指南
 
-Connect your AI agent to [FundFarm (养基场)](https://myfundfarm.com) — a comprehensive A-share mutual fund platform with real-time data, portfolio management, and AI-powered analysis.
+## 快速连接
 
-## Quick Connect
-
-### MCP Server URL
+### MCP Server 地址
 
 ```
 https://funds-incubator.up.railway.app/mcp
 ```
 
-Protocol: SSE (Server-Sent Events), standard MCP protocol.
+协议: SSE (Server-Sent Events)，标准 MCP 协议。
 
 ---
 
-## Authentication (choose one)
+## 认证方式（二选一）
 
-### Option 1: OAuth2 Authorization (Recommended)
+### 方式一: OAuth2 授权（推荐）
 
-Agent initiates the OAuth2 flow automatically. User just clicks "Authorize".
+Agent 自主发起 OAuth2 授权流程，用户只需在弹出的页面上点击"授权"。
 
-**1. Get server metadata:**
+**选择你的 client_id：**
+
+| client_id | 适用 Agent |
+|---|---|
+| `claude-desktop` | Claude Desktop |
+| `claude-code` | Claude Code (CLI) |
+| `chatgpt-desktop` | ChatGPT Desktop |
+| `cursor-ide` | Cursor |
+| `windsurf-ide` | Windsurf |
+| `gemini-cli` | Gemini CLI |
+| `openclaw` | OpenClaw |
+| `generic-mcp` | 其他未列出的 Agent |
+
+> 所有 client_id 均为公开标识符（无 client_secret），不含任何密钥。
+
+**1. 获取服务端元数据：**
 ```
 GET https://funds-incubator.up.railway.app/api/v1/oauth/.well-known/oauth-authorization-server
 ```
 
-Returns JSON with all endpoint URLs (authorization_endpoint, token_endpoint, etc).
+返回的 JSON 包含所有端点地址（authorization_endpoint、token_endpoint 等）。
 
-**2. Redirect user to authorize:**
+**2. 引导用户授权：**
+
+将用户重定向到授权页面（将 `<YOUR_CLIENT_ID>` 替换为上表中对应的值）:
 ```
 https://myfundfarm.com/#/oauth/authorize
-  ?client_id=YOUR_CLIENT_ID
-  &redirect_uri=YOUR_REDIRECT_URI
+  ?client_id=<YOUR_CLIENT_ID>
+  &redirect_uri=你的回调地址
   &scope=fund:read portfolio:read portfolio:write ai:read ai:execute
   &response_type=code
   &code_challenge=<PKCE S256 challenge>
   &code_challenge_method=S256
 ```
 
-User sees an authorization page showing app name and requested permissions.
+用户会看到一个授权确认页面，显示应用名和请求的权限列表。
 
-**3. Exchange code for token:**
+**3. 用授权码换取 Token：**
 ```http
 POST /api/v1/oauth/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=authorization_code
-&code=<authorization_code>
-&client_id=YOUR_CLIENT_ID
-&redirect_uri=YOUR_REDIRECT_URI
+&code=<用户授权后返回的code>
+&client_id=<YOUR_CLIENT_ID>
+&redirect_uri=你的回调地址
 &code_verifier=<PKCE verifier>
 ```
 
-**4. Token refresh:**
+**4. Token 续期：**
 
-Access Token expires in 1 hour. Use Refresh Token (30-day validity) to renew:
+Access Token 有效期 1 小时，过期后用 Refresh Token 续期（30天有效）：
 ```http
 POST /api/v1/oauth/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=refresh_token
 &refresh_token=<refresh_token>
-&client_id=YOUR_CLIENT_ID
+&client_id=<YOUR_CLIENT_ID>
 ```
 
-### Option 2: API Key (Quick Setup)
+### 方式二: API Key（快速接入）
 
-User generates an API Key on FundFarm website and provides it to the agent.
+用户在养基场网站生成一个专属 API Key，复制粘贴给 Agent 即可。
 
-**User steps:** Log in to FundFarm → Settings → AI Agent → Click "Generate API Key" → Copy → Paste to agent
+**用户操作：** 登录养基场 → 设置 → AI 智能体 → 点击「生成 API Key」→ 复制 Key → 粘贴给 Agent
 
-**Agent usage:** Include in all request headers:
+**Agent 使用方式：** 在所有请求 Header 中携带：
 ```
-Authorization: Bearer <user's API Key>
+Authorization: Bearer <用户提供的 API Key>
 ```
 
-> API Key is valid for 90 days. Generating a new key automatically revokes the old one.
+> API Key 有效期 90 天，过期后用户重新生成即可。每次生成新 Key 旧的自动失效。
 
 ---
 
-## Available Tools (24)
+## 可用工具（24个）
 
-Tools are auto-discovered via MCP protocol after connecting.
+连接后通过 MCP 协议自动发现，以下是完整列表供参考：
 
-### 📊 Fund Query
-| Tool | Description | Key Parameters |
-|------|-------------|---------------|
-| `search_funds` | Search funds by name/code | `keyword`, `limit` |
-| `get_fund_detail` | Fund details | `fund_code` |
-| `get_fund_nav_history` | Historical NAV | `fund_code`, `days` |
-| `get_fund_top_holdings` | Top 10 holdings | `fund_code` |
-| `get_fund_sector_allocation` | Sector allocation | `fund_code` |
-| `get_fund_estimate` | Intraday estimate | `fund_code` |
-| `get_fund_ranking` | Fund rankings | `sort_by`, `order`, `limit` |
+### 📊 基金查询
+| 工具 | 说明 | 关键参数 |
+|------|------|---------|
+| `search_funds` | 搜索基金 | `keyword`, `limit` |
+| `get_fund_detail` | 基金详情 | `fund_code` |
+| `get_fund_nav_history` | 历史净值 | `fund_code`, `days` |
+| `get_fund_top_holdings` | 重仓股 | `fund_code` |
+| `get_fund_sector_allocation` | 行业配置 | `fund_code` |
+| `get_fund_estimate` | 盘中估值 | `fund_code` |
+| `get_fund_ranking` | 排行榜 | `sort_by`, `order`, `limit` |
 
-### 📈 Market Data
-| Tool | Description |
-|------|-------------|
-| `get_market_indices` | Major market indices (SSE, SZSE, ChiNext) |
-| `get_sector_ranking` | Sector performance ranking |
-| `get_market_status` | Market open/close status |
+### 📈 市场数据
+| 工具 | 说明 |
+|------|------|
+| `get_market_indices` | 大盘指数行情 |
+| `get_sector_ranking` | 板块涨跌排名 |
+| `get_market_status` | 交易状态 |
 
-### 👤 User Portfolio
-| Tool | Description |
-|------|-------------|
-| `get_my_holdings` | Holdings with P&L |
-| `get_my_watchlist` | Watchlist |
-| `get_portfolio_summary` | Portfolio overview (total invested/returns) |
-| `get_my_sectors` | Holdings sector distribution |
-| `get_my_nests` | Portfolio groups (nests) |
-| `get_transactions` | Transaction history (filterable by fund code / nest) |
+### 👤 用户持仓
+| 工具 | 说明 |
+|------|------|
+| `get_my_holdings` | 持仓及收益 |
+| `get_my_watchlist` | 自选基金 |
+| `get_portfolio_summary` | 组合概览 |
+| `get_my_sectors` | 板块分布 |
+| `get_my_nests` | 鸡窝列表 |
+| `get_transactions` | 交易流水（可按基金代码/鸡窝筛选） |
 
-### 🤖 AI Analysis
-| Tool | Description |
-|------|-------------|
-| `get_latest_ai_report` | Latest AI analysis report |
-| `run_ai_analysis` | Run AI portfolio analysis (consumes quota) |
+### 🤖 AI 分析
+| 工具 | 说明 |
+|------|------|
+| `get_latest_ai_report` | 最新分析报告 |
+| `run_ai_analysis` | 运行 AI 分析（消耗额度） |
 
-### ✏️ Write Operations
-| Tool | Limits |
-|------|--------|
+### ✏️ 写操作
+| 工具 | 限制 |
+|------|------|
 | `add_to_watchlist` | |
 | `remove_from_watchlist` | |
-| `add_holding` | Single purchase |
-| `batch_add_holdings` | Up to 50 items, counts as 1 write operation |
-| `sell_holding` | Max 50% of position per request |
-| `delete_transaction` | Agent-created records only; automatically reverses position changes |
+| `add_holding` | 单笔买入 |
+| `batch_add_holdings` | 单次最多50笔，仅算1次写操作 |
+| `sell_holding` | 单次≤50%持仓 |
+| `delete_transaction` | 只能删除 Agent 创建的记录，并自动回滚持仓 |
 
-Write operation limits: ≤30/day, ≤10/minute.
-
----
-
-## Scopes
-
-| Scope | Description |
-|-------|-------------|
-| `fund:read` | Fund info and market data (10 tools) |
-| `portfolio:read` | Holdings, watchlist, and transaction history (6 tools) |
-| `portfolio:write` | Manage holdings/watchlist, delete transactions (6 tools) |
-| `ai:read` | AI analysis reports (1 tool) |
-| `ai:execute` | Run AI analysis (1 tool) |
+写操作限制：每日≤30次，每分钟≤10次。
 
 ---
 
-## Example Conversations
+## 可用 Scopes
+
+| Scope | 说明 |
+|-------|------|
+| `fund:read` | 基金信息和市场数据（10个工具） |
+| `portfolio:read` | 持仓、自选、交易流水（6个工具） |
+| `portfolio:write` | 管理持仓/自选、撤销交易（6个工具） |
+| `ai:read` | AI 分析报告（1个工具） |
+| `ai:execute` | 运行 AI 分析（1个工具） |
+
+---
+
+## 典型对话
 
 ```
-User: How's the market today? → get_market_indices
-User: Look up fund 161725 → get_fund_detail("161725")
-User: Show my portfolio → get_my_holdings
-User: Analyze my holdings → run_ai_analysis or get_my_holdings + self-analyze
-User: Add 161725 to watchlist → add_to_watchlist("161725")
+用户: 今天大盘怎么样 → get_market_indices
+用户: 查一下 161725 → get_fund_detail("161725")
+用户: 看看我的基金 → get_my_holdings
+用户: 分析一下我的持仓 → run_ai_analysis 或 get_my_holdings + 自行分析
+用户: 把 161725 加到自选 → add_to_watchlist("161725")
 ```
 
-## Important Notes
+## 安全
 
-- **Registration required**: Users must register at https://myfundfarm.com before using any tools
-- **Data isolation**: Token is bound to user identity, can only access own data
-- **Membership limits apply**: Free users have limits on fund count, AI analysis quota, etc.
-- **Write operations**: Whitelisted + rate-limited for safety
-- **Audit logging**: All MCP calls are logged for security
+- Token 绑定用户，只能访问自己的数据
+- 写操作有白名单 + 量控
+- 所有调用有审计日志
