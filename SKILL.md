@@ -1,4 +1,5 @@
 ---
+name: fundfarm
 description: 如何将养基场 MCP Server 接入 AI 智能体（OpenClaw、Claude Desktop、Cursor 等）
 ---
 
