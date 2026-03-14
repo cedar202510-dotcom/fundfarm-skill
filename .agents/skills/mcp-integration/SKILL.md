@@ -20,9 +20,12 @@ https://funds-incubator.up.railway.app/mcp
 
 ### 方式一: OAuth2 授权（推荐）
 
-Agent 自主发起 OAuth2 授权流程，用户只需在弹出的页面上点击"授权"。
+连接 MCP Server 时，标准 MCP 客户端会自动完成 OAuth2 授权流程：
+1. 客户端自动读取 `.well-known` 服务发现端点
+2. 弹出浏览器，用户在养基场页面点击「授权」
+3. 授权码自动回传给客户端，完成 Token 交换
 
-**选择你的 client_id：**
+**你只需要选择 client_id（填入 MCP 客户端配置）：**
 
 | client_id | 适用 Agent |
 |---|---|
@@ -35,53 +38,7 @@ Agent 自主发起 OAuth2 授权流程，用户只需在弹出的页面上点击
 | `openclaw` | OpenClaw |
 | `generic-mcp` | 其他未列出的 Agent |
 
-> 所有 client_id 均为公开标识符（无 client_secret），不含任何密钥。
-
-**1. 获取服务端元数据：**
-```
-GET https://funds-incubator.up.railway.app/api/v1/oauth/.well-known/oauth-authorization-server
-```
-
-返回的 JSON 包含所有端点地址（authorization_endpoint、token_endpoint 等）。
-
-**2. 引导用户授权：**
-
-将用户重定向到授权页面（将 `<YOUR_CLIENT_ID>` 替换为上表中对应的值）:
-```
-https://myfundfarm.com/#/oauth/authorize
-  ?client_id=<YOUR_CLIENT_ID>
-  &redirect_uri=你的回调地址
-  &scope=fund:read portfolio:read portfolio:write ai:read ai:execute
-  &response_type=code
-  &code_challenge=<PKCE S256 challenge>
-  &code_challenge_method=S256
-```
-
-用户会看到一个授权确认页面，显示应用名和请求的权限列表。
-
-**3. 用授权码换取 Token：**
-```http
-POST /api/v1/oauth/token
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=authorization_code
-&code=<用户授权后返回的code>
-&client_id=<YOUR_CLIENT_ID>
-&redirect_uri=你的回调地址
-&code_verifier=<PKCE verifier>
-```
-
-**4. Token 续期：**
-
-Access Token 有效期 1 小时，过期后用 Refresh Token 续期（30天有效）：
-```http
-POST /api/v1/oauth/token
-Content-Type: application/x-www-form-urlencoded
-
-grant_type=refresh_token
-&refresh_token=<refresh_token>
-&client_id=<YOUR_CLIENT_ID>
-```
+> 所有 client_id 均为公开标识符（无 client_secret）。Access Token 有效期 1 小时，自动用 Refresh Token 续期（30天有效）。
 
 ### 方式二: API Key（快速接入）
 
