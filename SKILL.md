@@ -56,7 +56,7 @@ Authorization: Bearer <用户提供的 API Key>
 
 ---
 
-## 可用工具（24个）
+## 可用工具（26个）
 
 连接后通过 MCP 协议自动发现，以下是完整列表供参考：
 
@@ -101,6 +101,8 @@ Authorization: Bearer <用户提供的 API Key>
 | `remove_from_watchlist` | |
 | `add_holding` | 单笔买入 |
 | `batch_add_holdings` | 单次最多50笔，仅算1次写操作 |
+| `import_holding` | 导入单个持仓（市值+收益），不需要构造买入交易 |
+| `batch_import_holdings` | 批量导入持仓（最多50条） |
 | `sell_holding` | 单次≤50%持仓 |
 | `delete_transaction` | 只能删除 Agent 创建的记录，并自动回滚持仓 |
 
