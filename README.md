@@ -77,7 +77,7 @@ User: What are the top funds today?  → get_fund_ranking(sort_by="daily_return"
 ## Learn More
 
 - 🌐 **Website**: [myfundfarm.com](https://myfundfarm.com)
-- 📖 **Full API Reference**: See [SKILL.md](.agents/skills/mcp-integration/SKILL.md)
+- 📖 **Full API Reference**: See [SKILL.md](SKILL.md)
 
 ## License
 
