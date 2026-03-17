@@ -137,3 +137,17 @@ Authorization: Bearer <用户提供的 API Key>
 - Token 绑定用户，只能访问自己的数据
 - 写操作有白名单 + 量控
 - 所有调用有审计日志
+
+## 数据新鲜度
+
+基金净值和估值的时间线：
+
+| 时段 | `nav_date` | `latest_nav` | `estimate_change_pct` |
+|------|-----------|-------------|----------------------|
+| 盘中（9:30-15:00） | 昨天 | 昨天的确认净值 | 实时估值涨跌幅 |
+| 盘后等待（15:00-19:00） | 昨天 | 昨天的确认净值 | 收盘估值涨跌幅 |
+| 净值公布后（~19:00+） | 今天 | 今天的确认净值 | 自动退化为实际值 |
+
+**判断方法：** 用 `nav_date` 与今天日期比较。如果 `nav_date < 今天`，说明今日净值尚未公布，`estimate_change_pct` 是盘中预估值。
+
+`get_my_holdings` 每只持仓返回 `estimate_change_pct`（估值涨跌幅）、`estimate_time`（估值更新时间）、`today_profit_estimate`（预估今日盈亏元），汇总层也有 `today_profit_estimate`（全部持仓预估总盈亏）。
