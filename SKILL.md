@@ -25,7 +25,11 @@ https://api.myfundfarm.com/mcp
 
 **OpenClaw**
 
-在 MCP 设置中添加 Server，地址填 `https://api.myfundfarm.com/mcp`。首次连接会自动弹出浏览器完成授权。
+OpenClaw 通过插件系统支持 MCP。在 MCP 设置或 `~/.openclaw/openclaw.json` 中添加养基场 MCP Server：
+```
+https://api.myfundfarm.com/mcp
+```
+首次连接会自动弹出浏览器完成 OAuth 授权。
 
 **Claude Desktop**
 
