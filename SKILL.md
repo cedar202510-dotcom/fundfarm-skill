@@ -15,11 +15,46 @@ https://api.myfundfarm.com/mcp
 
 协议: SSE (Server-Sent Events)，标准 MCP 协议。
 
+> ⚠️ **重要：如果你是 MCP 客户端（OpenClaw、Claude Desktop、Cursor、Gemini CLI 等），直接将上面的地址配置为 MCP Server 连接即可。OAuth 授权会自动弹出浏览器完成，不要手动拼授权 URL。**
+
 ---
 
-## 认证方式（二选一）
+## 认证方式
 
-### 方式一: OAuth2 授权（推荐）
+### 方式一: MCP 协议连接（推荐，全自动）
+
+适用于：OpenClaw、Claude Desktop、Cursor、Windsurf、Gemini CLI 等内置 MCP 客户端的 Agent。
+
+只需在 Agent 的 MCP 配置中添加 Server 地址，其余全自动：
+
+```json
+{
+  "mcpServers": {
+    "fundfarm": {
+      "url": "https://api.myfundfarm.com/mcp"
+    }
+  }
+}
+```
+
+连接时会自动：读取 `.well-known` 服务发现 → 弹出浏览器授权页 → 用户点击「授权」→ Token 自动保存和续期。**无需手动拼任何 URL。**
+
+### 方式二: API Key（无 MCP 客户端时使用）
+
+适用于：自建 Agent、不支持 MCP 协议的 Agent、或想跳过 OAuth 流程的场景。
+
+**用户操作：** 登录 [养基场](https://myfundfarm.com) → 设置 → AI 智能体 → 点击「生成 API Key」→ 复制 Key → 粘贴给 Agent
+
+**Agent 使用方式：** 在所有请求 Header 中携带：
+```
+Authorization: Bearer <用户提供的 API Key>
+```
+
+> API Key 有效期 90 天，过期后用户重新生成即可。每次生成新 Key 旧的自动失效。
+
+### 方式三: 手动 OAuth2（自行开发 MCP 客户端时参考）
+
+仅在自己用 MCP SDK 开发客户端时需要了解。普通接入无需阅读本节。
 
 **关键端点：**
 
@@ -29,21 +64,6 @@ https://api.myfundfarm.com/mcp
 | 授权页面 | `https://myfundfarm.com/#/oauth/authorize` |
 | Token 端点 | `https://api.myfundfarm.com/api/v1/oauth/token` |
 | 撤销端点 | `https://api.myfundfarm.com/api/v1/oauth/revoke` |
-
-**授权流程：**
-1. 引导用户在浏览器打开授权链接（在下方 URL 中拼入实际参数）：
-   ```
-   https://myfundfarm.com/#/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_CALLBACK&response_type=code&scope=fund:read portfolio:read portfolio:write ai:read ai:execute
-   ```
-2. 用户登录养基场并点击「授权」
-3. 页面跳转到 `redirect_uri?code=AUTHORIZATION_CODE`
-4. 用授权码换取 Token：
-   ```
-   POST https://api.myfundfarm.com/api/v1/oauth/token
-   Content-Type: application/x-www-form-urlencoded
-
-   grant_type=authorization_code&code=AUTH_CODE&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_CALLBACK
-   ```
 
 **可用的 client_id：**
 
@@ -58,20 +78,7 @@ https://api.myfundfarm.com/mcp
 | `openclaw` | OpenClaw |
 | `generic-mcp` | 其他未列出的 Agent |
 
-> 所有 client_id 均为公开标识符（无 client_secret）。Access Token 有效期 1 小时，自动用 Refresh Token 续期（30天有效）。
-
-### 方式二: API Key（快速接入）
-
-用户在养基场网站生成一个专属 API Key，复制粘贴给 Agent 即可。
-
-**用户操作：** 登录 [养基场](https://myfundfarm.com) → 设置 → AI 智能体 → 点击「生成 API Key」→ 复制 Key → 粘贴给 Agent
-
-**Agent 使用方式：** 在所有请求 Header 中携带：
-```
-Authorization: Bearer <用户提供的 API Key>
-```
-
-> API Key 有效期 90 天，过期后用户重新生成即可。每次生成新 Key 旧的自动失效。
+> 所有 client_id 均为公开标识符（无 client_secret）。Access Token 有效期 1 小时，Refresh Token 30 天有效。
 
 ---
 
