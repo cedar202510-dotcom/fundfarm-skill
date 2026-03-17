@@ -19,29 +19,68 @@ https://api.myfundfarm.com/mcp
 
 ---
 
-## 认证方式
+## 连接方式
 
-### 方式一: MCP 协议连接（推荐，全自动）
+### 各客户端配置
 
-适用于：OpenClaw、Claude Desktop、Cursor、Windsurf、Gemini CLI 等内置 MCP 客户端的 Agent。
+**OpenClaw**
 
-只需在 Agent 的 MCP 配置中添加 Server 地址，其余全自动：
+在 MCP 设置中添加 Server，地址填 `https://api.myfundfarm.com/mcp`。首次连接会自动弹出浏览器完成授权。
 
+**Claude Desktop**
+
+从 Claude 设置 → Connectors，添加自定义 MCP Server，URL 填：
+```
+https://api.myfundfarm.com/mcp
+```
+
+**Claude Code**
+
+```bash
+claude mcp add --transport http fundfarm https://api.myfundfarm.com/mcp
+```
+然后在会话中运行 `/mcp` 完成认证。
+
+**Cursor**
+
+在 Cursor 设置 → MCP → Add Server，Server URL 填：
+```
+https://api.myfundfarm.com/mcp
+```
+
+**VS Code / Windsurf**
+
+在 MCP 配置文件中添加：
 ```json
 {
   "mcpServers": {
     "fundfarm": {
-      "url": "https://api.myfundfarm.com/mcp"
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://api.myfundfarm.com/mcp"]
     }
   }
 }
 ```
 
-连接时会自动：读取 `.well-known` 服务发现 → 弹出浏览器授权页 → 用户点击「授权」→ Token 自动保存和续期。**无需手动拼任何 URL。**
+**Gemini CLI**
 
-### 方式二: API Key（无 MCP 客户端时使用）
+```bash
+gemini mcp add fundfarm --url https://api.myfundfarm.com/mcp
+```
 
-适用于：自建 Agent、不支持 MCP 协议的 Agent、或想跳过 OAuth 流程的场景。
+**其他支持 MCP 的 Agent**
+
+通用配置，只需填入 Server URL：
+```
+https://api.myfundfarm.com/mcp
+```
+协议: SSE，认证: OAuth 2.1（自动完成）。
+
+> 所有客户端首次连接时会自动弹出浏览器，在养基场页面点击「授权」即可。Token 自动保存和续期，无需手动操作。
+
+### API Key（备选方式）
+
+适用于：不支持 MCP 协议的 Agent、自建 Agent、或想跳过 OAuth 流程的场景。
 
 **用户操作：** 登录 [养基场](https://myfundfarm.com) → 设置 → AI 智能体 → 点击「生成 API Key」→ 复制 Key → 粘贴给 Agent
 
