@@ -10,7 +10,7 @@ description: 如何将养基场 MCP Server 接入 AI 智能体（OpenClaw、Clau
 ### MCP Server 地址
 
 ```
-https://funds-incubator.up.railway.app/mcp
+https://api.myfundfarm.com/mcp
 ```
 
 协议: SSE (Server-Sent Events)，标准 MCP 协议。
@@ -21,12 +21,31 @@ https://funds-incubator.up.railway.app/mcp
 
 ### 方式一: OAuth2 授权（推荐）
 
-连接 MCP Server 时，标准 MCP 客户端会自动完成 OAuth2 授权流程：
-1. 客户端自动读取 `.well-known` 服务发现端点
-2. 弹出浏览器，用户在养基场页面点击「授权」
-3. 授权码自动回传给客户端，完成 Token 交换
+**关键端点：**
 
-**你只需要选择 client_id（填入 MCP 客户端配置）：**
+| 端点 | 地址 |
+|------|------|
+| 服务发现 | `https://api.myfundfarm.com/.well-known/oauth-authorization-server` |
+| 授权页面 | `https://myfundfarm.com/#/oauth/authorize` |
+| Token 端点 | `https://api.myfundfarm.com/api/v1/oauth/token` |
+| 撤销端点 | `https://api.myfundfarm.com/api/v1/oauth/revoke` |
+
+**授权流程：**
+1. 引导用户在浏览器打开授权链接（在下方 URL 中拼入实际参数）：
+   ```
+   https://myfundfarm.com/#/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_CALLBACK&response_type=code&scope=fund:read portfolio:read portfolio:write ai:read ai:execute
+   ```
+2. 用户登录养基场并点击「授权」
+3. 页面跳转到 `redirect_uri?code=AUTHORIZATION_CODE`
+4. 用授权码换取 Token：
+   ```
+   POST https://api.myfundfarm.com/api/v1/oauth/token
+   Content-Type: application/x-www-form-urlencoded
+
+   grant_type=authorization_code&code=AUTH_CODE&client_id=YOUR_CLIENT_ID&redirect_uri=YOUR_CALLBACK
+   ```
+
+**可用的 client_id：**
 
 | client_id | 适用 Agent |
 |---|---|
@@ -45,7 +64,7 @@ https://funds-incubator.up.railway.app/mcp
 
 用户在养基场网站生成一个专属 API Key，复制粘贴给 Agent 即可。
 
-**用户操作：** 登录养基场 → 设置 → AI 智能体 → 点击「生成 API Key」→ 复制 Key → 粘贴给 Agent
+**用户操作：** 登录 [养基场](https://myfundfarm.com) → 设置 → AI 智能体 → 点击「生成 API Key」→ 复制 Key → 粘贴给 Agent
 
 **Agent 使用方式：** 在所有请求 Header 中携带：
 ```
@@ -159,7 +178,7 @@ OAuth2 授权只需一次，之后 Token 自动续期，无需用户反复操作
 from mcp.client import ClientSession
 from mcp.client.sse import sse_client
 
-async with sse_client("https://funds-incubator.up.railway.app/mcp") as (read, write):
+async with sse_client("https://api.myfundfarm.com/mcp") as (read, write):
     async with ClientSession(read, write) as session:
         await session.initialize()
         # SDK 自动完成：OAuth2 授权 → 存储 Token → Access Token 过期时自动用 Refresh Token 续期
@@ -173,7 +192,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 
 const transport = new SSEClientTransport(
-  new URL("https://funds-incubator.up.railway.app/mcp")
+  new URL("https://api.myfundfarm.com/mcp")
 );
 const client = new Client({ name: "my-agent", version: "1.0" });
 await client.connect(transport);
@@ -202,7 +221,7 @@ SDK 在首次连接时会：
 
 **2. 调用 MCP 工具时，如果收到 401，用 Refresh Token 换新的 Access Token：**
 ```
-POST /api/v1/oauth/token
+POST https://api.myfundfarm.com/api/v1/oauth/token
 Content-Type: application/x-www-form-urlencoded
 
 grant_type=refresh_token&refresh_token=yyy...&client_id=你的client_id
