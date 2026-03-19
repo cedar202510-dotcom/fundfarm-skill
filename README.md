@@ -35,7 +35,7 @@ With this skill, your AI agent gets access to **24 real-time tools** via MCP:
 ## MCP Server
 
 ```
-https://funds-incubator.up.railway.app/mcp
+https://api.myfundfarm.com/mcp
 ```
 
 Protocol: **SSE** (Server-Sent Events) — standard MCP transport.
