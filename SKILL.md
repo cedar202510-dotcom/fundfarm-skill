@@ -285,6 +285,50 @@ grant_type=refresh_token&refresh_token=yyy...&client_id=你的client_id
 
 ---
 
+## 已知的客户端兼容性说明
+
+### Authorization 头的标准行为
+
+按照 HTTP 标准，**每一个独立的 HTTP 请求都应该携带 Authorization 头**。MCP SSE 协议的请求分为两类：
+
+| 请求 | 说明 | 应该带 Authorization？ |
+|------|------|----------------------|
+| `GET /mcp` | 建立 SSE 长连接 | ✅ 是 |
+| `POST /mcp/messages/` | 每次工具调用 | ✅ 是（标准要求） |
+
+### OpenClaw / 部分客户端的已知 Bug
+
+**现象：** 部分 MCP 客户端（包括早期版本的 OpenClaw）只在建立 SSE 连接时带了 Authorization 头，后续每次调用工具时（POST /mcp/messages/）不带该头，导致服务端返回 `401 未认证`，工具调用失败。
+
+**官方标准：** MCP 规范要求客户端在 GET 和 POST 上都带 Authorization，OpenClaw 当前行为不符合规范，属于客户端 bug。
+
+**服务端兼容方案（已实现）：** 养基场后端部署了 `MCPSessionAuthMiddleware` 中间件：
+1. 捕获 `GET /mcp` 时的 Authorization 头，与客户端 IP 临时绑定缓存
+2. 当 `POST /mcp/messages/` 没有带 Authorization 时，自动从缓存中补上对应的 Token
+
+因此，即使客户端行为不规范，**工具调用也能正常鉴权**（服务端自动兜底）。
+
+### 排查 MCP 认证失败
+
+如果工具调用返回 401，按以下顺序排查：
+
+1. **直接 curl 测试 API Key 是否有效：**
+   ```bash
+   curl -H "Authorization: Bearer <你的API Key>" https://api.myfundfarm.com/api/v1/mcp/market/status
+   ```
+   返回 `{"code": 0, ...}` 说明 API Key 本身没问题，是客户端没带头。
+
+2. **查看后端日志：**
+   ```bash
+   journalctl -u fund-backend --since "10 min ago" | grep -E "MCP session|Error calling|401"
+   ```
+   如果看到 `✅ MCP session xxx... 已绑定 Authorization` → 中间件补丁生效  
+   如果看到 `Error calling xxx. Status code: 401` → 中间件没补到（可能 IP 不匹配）
+
+3. **多 worker 说明（可以放心）：** 虽然后端运行 2 个 uvicorn worker，但 MCP session 的 `GET /mcp`（建立 SSE 连接）和 `POST /mcp/messages/`（工具调用）由于 SSE 协议特性，`POST` 必须携带正确的 `session_id`，若该 `session_id` 不在目标 worker 的内存中，uvicorn 会直接返回 `404`。因此能成功处理 POST 的 worker 一定和处理 GET 是同一个，内存缓存中间件不存在竞争问题，是安全的。
+
+---
+
 ## 数据新鲜度
 
 基金净值和估值的时间线：
