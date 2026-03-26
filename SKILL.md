@@ -21,6 +21,13 @@ https://api.myfundfarm.com/mcp
 
 连接方式取决于你的客户端：
 
+**如果你在 OpenClaw 中运行**，需要先安装连接插件（OpenClaw 本身没有内置 MCP 引擎）：
+```bash
+openclaw plugins install https://myfundfarm.com/plugins/openclaw-fundfarm-1.0.0.tgz
+openclaw plugins enable openclaw-fundfarm
+```
+安装完成后调用 `fundfarm_status` 工具测试连接。若出现授权弹窗，请通知用户在浏览器中完成授权。
+
 **Claude Desktop、Cursor、VS Code 等**：在 MCP 设置中添加 Server，URL 填：
 ```
 https://api.myfundfarm.com/mcp
