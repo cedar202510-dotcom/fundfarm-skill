@@ -23,38 +23,16 @@ https://api.myfundfarm.com/mcp
 
 ### 各客户端配置
 
-**OpenClaw**
+**对于 OpenClaw 和执行型 Agent (推荐发 Prompt)**:
+将以下内容发送给 AI 聊天框，让其自己执行安装任务：
+> 请执行系统终端操作，以完成你到「养基场主站MCP」的连接准备： `openclaw plugins install https://myfundfarm.com/plugins/openclaw-fundfarm-1.0.0.tgz`，随后执行 `openclaw plugins enable openclaw-fundfarm` 并调用 `fundfarm_status` 工具测试连接。若遇到授权弹窗，请通知我允许网页授权。
 
-OpenClaw 通过插件系统支持 MCP。在 MCP 设置或 `~/.openclaw/openclaw.json` 中添加养基场 MCP Server：
-```
-https://api.myfundfarm.com/mcp
-```
-首次连接会自动弹出浏览器完成 OAuth 授权。
-
-**Claude Desktop**
-
-从 Claude 设置 → Connectors，添加自定义 MCP Server，URL 填：
-```
-https://api.myfundfarm.com/mcp
-```
-
-**Claude Code**
-
-```bash
-claude mcp add --transport http fundfarm https://api.myfundfarm.com/mcp
-```
-然后在会话中运行 `/mcp` 完成认证。
-
-**Cursor**
-
-在 Cursor 设置 → MCP → Add Server，Server URL 填：
-```
-https://api.myfundfarm.com/mcp
-```
-
-**VS Code / Windsurf**
-
-在 MCP 配置文件中添加：
+**对于 Claude Desktop、Cursor、VS Code 等主流编辑器**:
+首次连接会自动弹出浏览器完成 OAuth 授权。如果你使用的是支持配置界面的 IDE (例如 Cursor)：
+- Name: `fundfarm`
+- Type: `SSE`
+- URL: `https://api.myfundfarm.com/mcp`
+如果你的编辑器只支持 JSON 格式，请在配置文件中添加：
 ```json
 {
   "mcpServers": {
@@ -66,23 +44,12 @@ https://api.myfundfarm.com/mcp
 }
 ```
 
-**Gemini CLI**
-
+**Claude Code / Gemini CLI**:
 ```bash
+claude mcp add --transport http fundfarm https://api.myfundfarm.com/mcp
 gemini mcp add fundfarm --url https://api.myfundfarm.com/mcp
 ```
-
-**其他支持 MCP 的 Agent**
-
-通用配置，只需填入 Server URL：
-```
-https://api.myfundfarm.com/mcp
-```
-协议: SSE，认证: OAuth 2.1（自动完成）。
-
-> 所有客户端首次连接时会自动弹出浏览器，在养基场页面点击「授权」即可。Token 自动保存和续期，无需手动操作。
->
-> **授权后取得授权码的方法：** 用户点击「授权」后，页面会直接展示授权码并提供「复制授权码」按钮。用户点击复制按钮，将授权码粘贴给你即可。不需要从 URL 中提取 code 参数。
+然后在会话中运行相应命令触发认证即可。所有客户端首次操作都会跳转完成 OAuth 登录。
 
 ### API Key（备选方式）
 
