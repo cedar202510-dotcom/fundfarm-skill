@@ -26,6 +26,8 @@ With this skill, your AI agent gets access to **26 real-time tools** via MCP:
 - **View holdings** with real-time P&L calculation
 - **Track watchlists** across multiple portfolio groups ("Nests")
 - **Transaction history** with filtering by fund or nest
+- **Write personal knowledge** into the same RAG knowledge base used on the web app
+- **Read knowledge entries back** so a local agent can analyze them offline
 - **Import holdings** for migration, including overwrite-aware modify semantics
 - **Buy & sell** with safety guardrails (rate limits, position limits)
 
@@ -52,7 +54,7 @@ Users need a [FundFarm](https://myfundfarm.com) account. Two methods:
 
 ## Write Operations
 
-Write tools (buy, sell, import holdings, watchlist) are rate-limited and designed for safe autonomous use. Agent-created transactions are reversible.
+Write tools (buy, sell, import holdings, knowledge write, watchlist) are rate-limited and designed for safe autonomous use. Agent-created transactions are reversible.
 
 ## Example Conversations
 
@@ -62,6 +64,8 @@ User: Look up fund 161725            → get_fund_detail("161725")
 User: Show my portfolio              → get_my_holdings
 User: Analyze my holdings            → run_ai_analysis
 User: Add 161725 to my watchlist     → add_to_watchlist("161725")
+User: Save this strategy note        → use `fundfarm knowledge add ...` in CLI (VIP only)
+User: Read note #12 for analysis     → use `fundfarm knowledge get 12 --content-only` in CLI
 User: Import my existing 161725 bag  → import_holding("161725", market_value=12000, holding_profit=800)
 User: What are the top funds today?  → get_fund_ranking(sort_by="daily_return")
 ```
