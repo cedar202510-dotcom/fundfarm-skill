@@ -66,7 +66,7 @@ User: Analyze my holdings            → run_ai_analysis
 User: Add 161725 to my watchlist     → add_to_watchlist("161725")
 User: Save this strategy note        → use `fundfarm knowledge add ...` in CLI (VIP only)
 User: Read note #12 for analysis     → use `fundfarm knowledge get 12 --content-only` in CLI
-User: Import my existing 161725 bag  → import_holding("161725", market_value=12000, holding_profit=800)
+User: Import my existing 161725 bag  → import_holding("161725", market_value=12000, holding_profit=800, nest_id=3, platform="支付宝")
 User: What are the top funds today?  → get_fund_ranking(sort_by="daily_return")
 ```
 
