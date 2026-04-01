@@ -10,7 +10,7 @@ npx skills add cedar202510-dotcom/fundfarm-skill
 
 ## What Can Your Agent Do?
 
-With this skill, your AI agent gets access to **24 real-time tools** via MCP:
+With this skill, your AI agent gets access to **26 real-time tools** via MCP:
 
 ### 📊 Fund Intelligence
 - **Search** 15,000+ A-share mutual funds by name or code
@@ -26,6 +26,7 @@ With this skill, your AI agent gets access to **24 real-time tools** via MCP:
 - **View holdings** with real-time P&L calculation
 - **Track watchlists** across multiple portfolio groups ("Nests")
 - **Transaction history** with filtering by fund or nest
+- **Import holdings** for migration, including overwrite-aware modify semantics
 - **Buy & sell** with safety guardrails (rate limits, position limits)
 
 ### 🤖 AI Analysis
@@ -51,7 +52,7 @@ Users need a [FundFarm](https://myfundfarm.com) account. Two methods:
 
 ## Write Operations
 
-Write tools (buy, sell, watchlist) are rate-limited and designed for safe autonomous use. Agent-created transactions are reversible.
+Write tools (buy, sell, import holdings, watchlist) are rate-limited and designed for safe autonomous use. Agent-created transactions are reversible.
 
 ## Example Conversations
 
@@ -61,6 +62,7 @@ User: Look up fund 161725            → get_fund_detail("161725")
 User: Show my portfolio              → get_my_holdings
 User: Analyze my holdings            → run_ai_analysis
 User: Add 161725 to my watchlist     → add_to_watchlist("161725")
+User: Import my existing 161725 bag  → import_holding("161725", market_value=12000, holding_profit=800)
 User: What are the top funds today?  → get_fund_ranking(sort_by="daily_return")
 ```
 
@@ -70,7 +72,7 @@ User: What are the top funds today?  → get_fund_ranking(sort_by="daily_return"
 |-------|:-----:|-------------|
 | `fund:read` | 10 | Fund info and market data |
 | `portfolio:read` | 6 | Holdings, watchlist, transactions |
-| `portfolio:write` | 6 | Buy, sell, manage watchlist |
+| `portfolio:write` | 8 | Buy, sell, import holdings, manage watchlist |
 | `ai:read` | 1 | AI analysis reports |
 | `ai:execute` | 1 | Run AI analysis |
 
