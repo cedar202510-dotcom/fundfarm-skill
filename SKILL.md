@@ -12,7 +12,7 @@ description: 养基场 — AI 基金管理助手（CLI + MCP 双模式接入）
 ## 推荐方式：CLI（通用，适用于所有 AI Agent）
 
 ```bash
-npm install -g https://www.myfundfarm.com/cli/fundfarm-cli-0.2.7.tgz
+npm install -g https://www.myfundfarm.com/cli/fundfarm-cli-0.2.8.tgz
 fundfarm login
 fundfarm whoami
 ```
