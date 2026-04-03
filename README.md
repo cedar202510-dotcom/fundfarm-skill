@@ -10,7 +10,7 @@ npx skills add cedar202510-dotcom/fundfarm-skill
 
 ## What Can Your Agent Do?
 
-With this skill, your AI agent gets access to **26 real-time tools** via MCP:
+With this skill, your AI agent gets access to **27 real-time tools** via MCP:
 
 ### 📊 Fund Intelligence
 - **Search** 15,000+ A-share mutual funds by name or code
