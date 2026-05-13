@@ -12,7 +12,7 @@ description: 养基场 — AI 基金管理助手（CLI + MCP 双模式接入）
 ## 推荐方式：CLI（通用，适用于所有 AI Agent）
 
 ```bash
-npm install -g https://app.myfundfarm.com/cli/fundfarm-cli-0.2.11.tgz
+npm install -g https://app.myfundfarm.com/cli/fundfarm-cli-0.2.12.tgz
 fundfarm login
 fundfarm whoami
 ```
@@ -54,8 +54,7 @@ CLI 使用手机短信验证码登录，新用户自动注册，无需 API Key�
 ### 后端安全（服务端强制执行，无法绕过）
 - **JWT 认证 + 用户隔离**：所有查询限定 `auth.user.username`
 - **操作白名单**：仅允许 8 个特定写操作
-- **频率限制**：每日 ≤30 次，每分钟 ≤10 次
-- **卖出熔断**：单次卖出 ≤50% 持仓
+- **频率限制**：每日 ≤50 次，每分钟 ≤20 次
 - **买入上限**：单笔 ≤100 万元
 - **NAV 范围校验**：0 < nav < 1000
 - **审计日志**：每次调用记录用户、操作、客户端、IP
@@ -173,10 +172,10 @@ Authorization: Bearer <用户提供的 API Key>
 | `batch_add_holdings` | 单次最多50笔 |
 | `import_holding` | 导入单个持仓（已有持仓则覆盖并记为 Agent 修改） |
 | `batch_import_holdings` | 批量导入持仓（最多50条） |
-| `sell_holding` | 单次≤50%持仓 |
+| `sell_holding` | 支持清仓 |
 | `delete_transaction` | 只能删除 Agent 创建的记录 |
 
-写操作限制：每日≤30次，每分钟≤10次。
+写操作限制：每日≤50次，每分钟≤20次。
 
 ---
 
@@ -213,7 +212,7 @@ Authorization: Bearer <用户提供的 API Key>
 ## 安全
 
 - Token 绑定用户，只能访问自己的数据
-- 写操作有白名单 + 量控 + 卖出熔断
+- 写操作有白名单 + 频率限制 + 审计日志
 - 撤销操作只能删除 Agent 创建的记录
 - 所有调用有审计日志
 
