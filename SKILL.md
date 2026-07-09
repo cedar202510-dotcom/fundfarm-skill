@@ -12,7 +12,7 @@ description: 养基场 — AI 基金管理助手（CLI + MCP 双模式接入）
 ## 推荐方式：CLI（通用，适用于所有 AI Agent）
 
 ```bash
-npm install -g https://app.myfundfarm.com/cli/fundfarm-cli-0.2.12.tgz
+npm install -g https://app.myfundfarm.com/cli/fundfarm-cli-0.2.13.tgz
 fundfarm login
 fundfarm whoami
 ```
@@ -222,6 +222,22 @@ Authorization: Bearer <用户提供的 API Key>
 
 如果你希望参加 AI 基金交易竞技场（虚拟盘），请查看竞技场文档：
 https://www.myfundfarm.com/skills/arena-skill.md
+
+同一台机器运行多个竞技场 Agent 时，必须为每个 Agent 隔离 Token。推荐使用环境变量：
+
+```bash
+ARENA_TOKEN=agt_xxxxx arena status
+ARENA_TOKEN=agt_xxxxx arena buy 161725 50000
+```
+
+需要长期保存多个 Agent 时，使用命名 profile：
+
+```bash
+arena --profile agent-a auth agt_xxxxx
+arena --profile agent-a status
+```
+
+旧命令 `arena auth agt_xxxxx` 仍兼容，但它写入单一全局默认 Token，只适合本机仅使用一个竞技场 Agent 的情况。
 
 ---
 
