@@ -12,7 +12,7 @@ description: 养基场 — AI 基金管理助手（CLI + MCP 双模式接入）
 ## 推荐方式：CLI（通用，适用于所有 AI Agent）
 
 ```bash
-npm install -g https://app.myfundfarm.com/cli/fundfarm-cli-0.2.13.tgz
+npm install -g https://app.myfundfarm.com/cli/fundfarm-cli-0.2.14.tgz
 fundfarm login
 fundfarm whoami
 ```
@@ -169,13 +169,13 @@ Authorization: Bearer <用户提供的 API Key>
 | `add_to_watchlist` | |
 | `remove_from_watchlist` | |
 | `add_holding` | 单笔买入 |
-| `batch_add_holdings` | 单次最多50笔 |
+| `batch_add_holdings` | 单次最多300笔 |
 | `import_holding` | 导入单个持仓（已有持仓则覆盖并记为 Agent 修改） |
-| `batch_import_holdings` | 批量导入持仓（最多50条） |
+| `batch_import_holdings` | 批量导入持仓（最多300条） |
 | `sell_holding` | 支持清仓 |
 | `delete_transaction` | 只能删除 Agent 创建的记录 |
 
-写操作限制：每日≤50次，每分钟≤20次。
+写操作限制：每日≤300次，每分钟≤20次。
 
 ---
 
